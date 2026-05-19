@@ -91,26 +91,8 @@ class TransactionLoader:
 def main():
     # Example usage:
     # Assuming transactions.csv is in the data/ directory
-    csv_file = "data/transactions.csv"
+    pass
     
-    # Create a dummy CSV if it doesn't exist for demonstration/initialization
-    if not os.path.exists(csv_file):
-        os.makedirs("data", exist_ok=True)
-        df_dummy = pd.DataFrame([
-            {"date": "2023-10-01", "amount": 50.0, "category": "Food", "description": "Lunch", "source": "Credit Card"},
-            {"date": "2023-10-02", "amount": 20.0, "category": "Transport", "description": "Bus", "source": "Cash"}
-        ])
-        df_dummy.to_csv(csv_file, index=False)
-        print(f"Created dummy CSV at {csv_file}")
-
-    loader = TransactionLoader()
-    try:
-        transactions = loader.load_from_csv(csv_file)
-        loader.sync_to_db(transactions)
-        return transactions
-    except Exception as e:
-        print(f"Error during loading: {e}")
-        return []
 
 if __name__ == "__main__":
     main()
