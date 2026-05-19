@@ -1,0 +1,90 @@
+date,amount,category,description,source
+2024-01-02,45000,Income,Monthly Salary,manual
+2024-01-03,1200,Food & Dining,Zomato - Dinner,manual
+2024-01-04,499,Subscriptions,Netflix Monthly,manual
+2024-01-05,2500,Transport,Ola Cabs - Weekly,manual
+2024-01-06,8500,Rent,PG Accommodation January,manual
+2024-01-07,650,Food & Dining,Swiggy - Lunch,manual
+2024-01-08,3200,Shopping,Amazon - Earphones,manual
+2024-01-09,199,Subscriptions,Spotify Premium,manual
+2024-01-10,1100,Utilities,Electricity Bill,manual
+2024-01-11,450,Food & Dining,Local Dhaba - Dinner,manual
+2024-01-12,2000,Health,Gym Membership,manual
+2024-01-13,799,Subscriptions,YouTube Premium,manual
+2024-01-14,5500,Shopping,Myntra - Clothes,manual
+2024-01-15,300,Transport,Metro Card Recharge,manual
+2024-01-16,900,Food & Dining,Cafe Coffee Day,manual
+2024-01-17,1500,Education,Udemy Course,manual
+2024-01-18,600,Food & Dining,Zomato - Breakfast,manual
+2024-01-19,2200,Health,Pharmacy - Medicines,manual
+2024-01-20,400,Transport,Rapido - Daily commute,manual
+2024-01-21,750,Food & Dining,Swiggy - Weekend special,manual
+2024-01-22,12000,Shopping,Croma - Keyboard + Mouse,manual
+2024-01-23,350,Utilities,Mobile Recharge,manual
+2024-01-24,1800,Food & Dining,Restaurant - Friends outing,manual
+2024-01-25,500,Transport,Petrol,manual
+2024-01-26,2500,Entertainment,BookMyShow - Concert tickets,manual
+2024-01-27,400,Food & Dining,Chai and snacks,manual
+2024-01-28,999,Subscriptions,Hotstar Annual (monthly split),manual
+2024-01-29,1100,Utilities,Internet Bill,manual
+2024-01-30,3500,Savings,SIP - Mutual Fund,manual
+2024-01-31,600,Food & Dining,Zomato - Month end dinner,manual
+2024-02-01,45000,Income,Monthly Salary,manual
+2024-02-02,8500,Rent,PG Accommodation February,manual
+2024-02-03,1400,Food & Dining,Swiggy - Dinner,manual
+2024-02-04,499,Subscriptions,Netflix Monthly,manual
+2024-02-05,700,Transport,Ola Cabs,manual
+2024-02-06,2200,Shopping,Flipkart - Books,manual
+2024-02-07,199,Subscriptions,Spotify Premium,manual
+2024-02-08,1100,Utilities,Electricity Bill,manual
+2024-02-09,850,Food & Dining,Local restaurant,manual
+2024-02-10,2000,Health,Gym Membership,manual
+2024-02-11,4500,Shopping,Nykaa - Skincare,manual
+2024-02-12,400,Transport,Metro Card Recharge,manual
+2024-02-13,1200,Food & Dining,Valentine dinner,manual
+2024-02-14,3000,Entertainment,Movie + dinner date,manual
+2024-02-15,600,Food & Dining,Zomato order,manual
+2024-02-16,1500,Education,Coursera subscription,manual
+2024-02-17,350,Utilities,Mobile Recharge,manual
+2024-02-18,900,Health,Doctor consultation,manual
+2024-02-19,500,Transport,Petrol,manual
+2024-02-20,750,Food & Dining,Swiggy Weekend,manual
+2024-02-21,799,Subscriptions,YouTube Premium,manual
+2024-02-22,2800,Shopping,Amazon - Home essentials,manual
+2024-02-23,1100,Utilities,Internet Bill,manual
+2024-02-24,400,Food & Dining,Breakfast - Cafe,manual
+2024-02-25,3500,Savings,SIP - Mutual Fund,manual
+2024-02-26,600,Food & Dining,Zomato - Dinner,manual
+2024-02-27,1800,Entertainment,BookMyShow - Movie,manual
+2024-02-28,550,Food & Dining,Swiggy - Late night,manual
+2024-03-01,45000,Income,Monthly Salary,manual
+2024-03-02,8500,Rent,PG Accommodation March,manual
+2024-03-03,1300,Food & Dining,Zomato - Dinner,manual
+2024-03-04,499,Subscriptions,Netflix Monthly,manual
+2024-03-05,2100,Transport,Ola Weekly,manual
+2024-03-06,199,Subscriptions,Spotify Premium,manual
+2024-03-07,1050,Utilities,Electricity Bill,manual
+2024-03-08,700,Food & Dining,Swiggy order,manual
+2024-03-09,2000,Health,Gym Membership,manual
+2024-03-10,6500,Shopping,Holi shopping - Clothes,manual
+2024-03-11,400,Transport,Metro Card,manual
+2024-03-12,799,Subscriptions,YouTube Premium,manual
+2024-03-13,1100,Food & Dining,Holi celebration - Food,manual
+2024-03-14,2500,Entertainment,Holi party - contribution,manual
+2024-03-15,600,Food & Dining,Local Dhaba,manual
+2024-03-16,1500,Education,Udemy - Python course,manual
+2024-03-17,350,Utilities,Mobile Recharge,manual
+2024-03-18,500,Transport,Petrol,manual
+2024-03-19,900,Food & Dining,Restaurant outing,manual
+2024-03-20,1800,Health,Annual health checkup,manual
+2024-03-21,3200,Shopping,Amazon - Gadget accessories,manual
+2024-03-22,1100,Utilities,Internet Bill,manual
+2024-03-23,450,Food & Dining,Zomato - Lunch,manual
+2024-03-24,3500,Savings,SIP - Mutual Fund,manual
+2024-03-25,800,Food & Dining,Swiggy Weekend,manual
+2024-03-26,1200,Entertainment,OTT Annual upgrade,manual
+2024-03-27,600,Food & Dining,Dinner with friends,manual
+2024-03-28,2000,Shopping,Flipkart - Stationery,manual
+2024-03-29,400,Transport,Rapido rides,manual
+2024-03-30,550,Food & Dining,Breakfast outing,manual
+2024-03-31,1000,Miscellaneous,Emergency fund top-up,manual
