@@ -1,8 +1,9 @@
-from pydantic import BaseModel, Field, List
+from pydantic import BaseModel
+from datetime import date
 
 class Transaction(BaseModel):
-    date: int,
-    amount: int,
-    category: List[str], 
-    description: str,
+    date: date
+    amount: float
+    category: str
+    description: str
     source: str
