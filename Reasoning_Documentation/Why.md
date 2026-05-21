@@ -1,0 +1,2 @@
+### Why is it required for exec() to have a namespace?
+#### Problem-1: variable overwrite, Problem-2: Access to Everything, Problem-3: Executed code might permanently change your environment, Problem-4: Deleting things
