@@ -1,7 +1,7 @@
 import streamlit as st
 import os
 from dotenv import load_dotenv
-from langchain_core.messages import HumanMessage, AIMessage
+from langchain_core.messages import HumanMessage
 from memory.checkpoint import get_sqlite_saver
 from memory.graph import create_graph
 from rag.loader import TransactionLoader
