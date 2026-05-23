@@ -1,12 +1,13 @@
 import os
 from dotenv import load_dotenv
+
+# Load API keys at the very beginning
+load_dotenv()
+
 from rag.loader import TransactionLoader
 from memory.checkpoint import get_sqlite_saver
 from memory.graph import create_graph
 from langchain_core.messages import HumanMessage
-
-# Load API keys
-load_dotenv()
 
 def sync_data():
     """Syncs CSV transactions to the local SQLite database."""

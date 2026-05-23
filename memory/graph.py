@@ -1,6 +1,6 @@
 # ---------- IMPORT ----------
 import os
-from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
+from langchain_core.messages import BaseMessage, HumanMessage, AIMessage, SystemMessage
 from langchain_openai import AzureChatOpenAI
 from langgraph.graph import StateGraph, START, END
 from langgraph.prebuilt import ToolNode
@@ -16,11 +16,15 @@ from schema.state import UserFinanceState
 from schema.budget import MonthlyBudgetPlan
 # ---------- IMPORT ----------
 
+# Clean the azure_endpoint to prevent 404 errors (stripping /openai/v1/ suffix)
+raw_endpoint = os.getenv("foundry_endpoint")
+endpoint = raw_endpoint.replace("/openai/v1/", "").replace("/openai/v1", "").rstrip("/") if raw_endpoint else None
+
 # Initialize Azure OpenAI Models
 model = AzureChatOpenAI(
-    azure_deployment=os.getenv("FOUNDRY_DEPLOYMENT"),
-    azure_endpoint=os.getenv("FOUNDRY_ENDPOINT"),
-    api_key=os.getenv("FOUNDRY_API_KEY"),
+    azure_deployment=os.getenv("foundry_deployment"),
+    azure_endpoint=endpoint,
+    api_key=os.getenv("foundry_api_key"),
     api_version="2024-05-01-preview",
     temperature=0
 )
@@ -76,8 +80,14 @@ def agent_node(state: UserFinanceState):
     # Master System Identity
     identity = (
         "You are a Personal Finance AI Assistant. Your goal is to help users manage their money, "
-        "track spending, and achieve financial goals. Use the provided tools to fetch transaction data, "
-        "calculate metrics, or search the web for market info. Be professional, data-driven, and concise."
+        "track spending, and achieve financial goals. \n\n"
+        "TOOL USAGE GUIDELINES:\n"
+        "1. Use 'calculate_budget_metrics' for high-level numbers: average monthly spend, total income/expenses, "
+        "savings rates, and category breakdowns.\n"
+        "2. Use 'financial_rag_tool' for specific history: e.g., 'How much did I spend in January?' or 'What are my dining habits?'.\n"
+        "3. If a tool returns an error or 'no data', explain this to the user professionally and ask if they'd like "
+        "to manually provide data or if they need help setting up their transactions CSV.\n"
+        "Be professional, data-driven, and concise."
     )
     
     # Construct context from goals and summary
@@ -127,8 +137,22 @@ def summarize_node(state: UserFinanceState):
     if len(messages) <= 6:
         return {}
     
+    # Identify which messages to summarize (all but the last 2)
+    to_summarize = messages[:-2]
+    
+    # Let's find the last non-tool-related sequence
+    safe_to_summarize = []
+    for i, msg in enumerate(to_summarize):
+        safe_to_summarize.append(msg)
+        
+    while safe_to_summarize and hasattr(safe_to_summarize[-1], "tool_calls") and safe_to_summarize[-1].tool_calls:
+        safe_to_summarize.pop()
+
+    if not safe_to_summarize:
+        return {}
+
     prompt = "Summarize the following conversation history into a concise summary, retaining key financial details and goals discussed."
-    summary_response = model.invoke([SystemMessage(content=prompt)] + messages[:-2])
+    summary_response = model.invoke([SystemMessage(content=prompt)] + safe_to_summarize)
     
     return {"summary": summary_response.content}
 

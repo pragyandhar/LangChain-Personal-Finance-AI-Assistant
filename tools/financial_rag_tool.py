@@ -1,19 +1,26 @@
 # ---------- IMPORT ----------
 from langchain_core.tools import tool
 from langchain_openai import AzureOpenAIEmbeddings
-from langchain_community.vectorstores import Chroma
+from langchain_chroma import Chroma
 import pandas as pd
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 # ---------- IMPORT ----------
 
 def finance_summarizer():
     persist_directory = "finance_chroma"
     
+    # Clean the azure_endpoint to prevent 404 errors (stripping /openai/v1/ suffix)
+    raw_endpoint = os.getenv("foundry_endpoint")
+    endpoint = raw_endpoint.replace("/openai/v1/", "").replace("/openai/v1", "").rstrip("/") if raw_endpoint else None
+
     # Configure Azure OpenAI Embeddings
     embeddings = AzureOpenAIEmbeddings(
         azure_deployment=os.getenv("azure_deploy"),
-        azure_endpoint=os.getenv("FOUNDRY_ENDPOINT"),
-        api_key=os.getenv("FOUNDRY_API_KEY"),
+        azure_endpoint=endpoint,
+        api_key=os.getenv("foundry_api_key"),
         api_version="2023-05-15"
     )
 
@@ -69,6 +76,10 @@ def financial_rag_tool(query: str):
     try:
         retriever = finance_retriever(VECTOR_STORE)
         docs = retriever.invoke(query)
+        
+        if not docs:
+            return "No specific financial records were found matching your query. You might want to try the 'calculate_budget_metrics' tool for a general overview."
+            
         return "\n\n".join([doc.page_content for doc in docs])
     except Exception as e:
         return f"Notice: Could not retrieve financial history from database: {e}"
