@@ -1,6 +1,7 @@
 # ---------- IMPORT ----------
-from langchain_core.messages import BaseMessage, HumanMessage, AIMessage, SystemMessage
-from langchain_openai import ChatOpenAI
+import os
+from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
+from langchain_openai import AzureChatOpenAI
 from langgraph.graph import StateGraph, START, END
 from langgraph.prebuilt import ToolNode
 
@@ -9,12 +10,21 @@ from tools.financial_rag_tool import financial_rag_tool
 from tools.budget_calculator_tool import calculate_budget_metrics
 from tools.web_search_tool import web_search
 from tools.Python_REPL_Tool import python_repl_tool
+
+# Import schemas
+from schema.state import UserFinanceState
+from schema.budget import MonthlyBudgetPlan
 # ---------- IMPORT ----------
 
-from schema.state import UserFinanceState
-
-# Initialize Model
-model = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+# Initialize Azure OpenAI Models
+model = AzureChatOpenAI(
+    azure_deployment=os.getenv("FOUNDRY_DEPLOYMENT"),
+    azure_endpoint=os.getenv("FOUNDRY_ENDPOINT"),
+    api_key=os.getenv("FOUNDRY_API_KEY"),
+    api_version="2024-05-01-preview",
+    temperature=0
+)
+planner_model = model.with_structured_output(MonthlyBudgetPlan)
 
 # Define tools list and bind to model
 tools = [financial_rag_tool, calculate_budget_metrics, web_search, python_repl_tool]
@@ -89,6 +99,26 @@ def agent_node(state: UserFinanceState):
     return {"messages": [response]}
 
 
+def planner_node(state: UserFinanceState):
+    """Generates a structured MonthlyBudgetPlan based on the conversation history."""
+    messages = state["messages"]
+    
+    prompt = (
+        "Based on the conversation history and the data retrieved by tools, "
+        "generate a structured Monthly Budget Plan. Ensure all figures are realistic "
+        "and aligned with the user's goals and spending history."
+    )
+    
+    # Call the model with structured output
+    budget_plan = planner_model.invoke([SystemMessage(content=prompt)] + messages)
+    
+    # Return a message informing the user the plan was generated
+    return {
+        "messages": [AIMessage(content="I have generated a structured budget plan based on our discussion.")],
+        "budget_plan": budget_plan
+    }
+
+
 def summarize_node(state: UserFinanceState):
     """Summarizes older messages if the history is too long."""
     messages = state["messages"]
@@ -111,17 +141,30 @@ def create_graph(checkpointer):
     workflow.add_node("detect_goal", detect_goal_node)
     workflow.add_node("agent", agent_node)
     workflow.add_node("tools", ToolNode(tools))
+    workflow.add_node("planner", planner_node)
     workflow.add_node("summarize", summarize_node)
 
     # Build Edges
     workflow.add_edge(START, "detect_goal")
     workflow.add_edge("detect_goal", "agent")
 
-    # Conditional edge for tool calling
+    # Conditional edge for tool calling and planning
     def should_continue(state: UserFinanceState):
         last_message = state["messages"][-1]
+        
+        # If the agent wants to call tools
         if last_message.tool_calls:
             return "tools"
+        
+        user_input = ""
+        for msg in reversed(state["messages"]):
+            if isinstance(msg, HumanMessage):
+                user_input = msg.content.lower()
+                break
+
+        if "plan" in user_input or "budget" in user_input:
+            return "planner"
+            
         return "summarize"
 
     workflow.add_conditional_edges(
@@ -129,19 +172,14 @@ def create_graph(checkpointer):
         should_continue,
         {
             "tools": "tools",
+            "planner": "planner",
             "summarize": "summarize"
         }
     )
 
     workflow.add_edge("tools", "agent")
+    workflow.add_edge("planner", "summarize")
     workflow.add_edge("summarize", END)
 
     # Compile the graph
     return workflow.compile(checkpointer=checkpointer)
-
-# Note: Use with memory.checkpoint.get_sqlite_saver() context manager
-# Example:
-# with get_sqlite_saver() as saver:
-#     app = create_graph(saver)
-#     app.invoke(...)
-

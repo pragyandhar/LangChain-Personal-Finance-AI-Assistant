@@ -1,6 +1,6 @@
 # ---------- IMPORT ----------
 from langchain_core.tools import tool
-from langchain_openai.embeddings import OpenAIEmbeddings
+from langchain_openai import AzureOpenAIEmbeddings
 from langchain_community.vectorstores import Chroma
 import pandas as pd
 import os
@@ -8,8 +8,13 @@ import os
 
 def finance_summarizer():
     persist_directory = "finance_chroma"
-    embeddings = OpenAIEmbeddings(
-        model="text-embedding-3-small"
+    
+    # Configure Azure OpenAI Embeddings
+    embeddings = AzureOpenAIEmbeddings(
+        azure_deployment=os.getenv("azure_deploy"),
+        azure_endpoint=os.getenv("FOUNDRY_ENDPOINT"),
+        api_key=os.getenv("FOUNDRY_API_KEY"),
+        api_version="2023-05-15"
     )
 
     # Check if the vectorstore already exists
@@ -58,8 +63,12 @@ except Exception as e:
 @tool
 def financial_rag_tool(query: str):
     """Query personal financial history. Use for questions about spending by category, month, or time period."""
-    retriever = finance_retriever(VECTOR_STORE)
+    if VECTOR_STORE is None:
+        return "Notice: The financial history database is currently unavailable due to an initialization issue (e.g. missing API keys or embedding deployment configuration)."
 
-    docs = retriever.invoke(query)
-
-    return "\n\n".join([doc.page_content for doc in docs])
+    try:
+        retriever = finance_retriever(VECTOR_STORE)
+        docs = retriever.invoke(query)
+        return "\n\n".join([doc.page_content for doc in docs])
+    except Exception as e:
+        return f"Notice: Could not retrieve financial history from database: {e}"

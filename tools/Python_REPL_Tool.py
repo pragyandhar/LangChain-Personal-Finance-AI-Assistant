@@ -7,6 +7,7 @@ import os
 
 @tool
 def python_repl_tool(code: str):
+    """Execute python code in a local sandbox environment. Useful for generating budget charts and saving figures to outputs/ directory."""
     path = "./outputs"
     folder = Path(path)
     folder.mkdir(exist_ok=True)
