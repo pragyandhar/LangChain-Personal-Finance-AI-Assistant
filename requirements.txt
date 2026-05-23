@@ -1,0 +1,12 @@
+streamlit
+python-dotenv
+langchain
+langchain-openai
+langgraph
+pandas
+langchain-chroma
+tavily-python
+pydantic
+pydantic-settings
+sqlalchemy
+aiosqlite
