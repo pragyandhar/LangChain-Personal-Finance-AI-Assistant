@@ -1,35 +1,61 @@
-from rag.loader import TransactionLoader
 import os
+from dotenv import load_dotenv
+from rag.loader import TransactionLoader
+from memory.checkpoint import get_sqlite_saver
+from memory.graph import create_graph
+from langchain_core.messages import HumanMessage
 
-def main():
-    # Define paths
+# Load API keys
+load_dotenv()
+
+def sync_data():
+    """Syncs CSV transactions to the local SQLite database."""
     csv_file = "data/transactions.csv"
     db_path = "data/transactions.db"
-    
-    # Ensure data directory exists
     os.makedirs("data", exist_ok=True)
+    
+    if not os.path.exists(csv_file):
+        print(f"Warning: {csv_file} not found. RAG and Budget tools may have limited data.")
+        return
         
-    # Initialize loader
     loader = TransactionLoader(db_path=db_path)
-    
-    print(f"Starting transaction sync from {csv_file}...")
-    
-    try:
-        # Checking if CSV exists, if not, we cannot proceed
-        if not os.path.exists(csv_file):
-            print(f"Error: {csv_file} not found. Please place your transactions CSV in the data folder.")
-            return []
+    print(f"Syncing transactions from {csv_file}...")
+    transactions = loader.load_from_csv(csv_file)
+    loader.sync_to_db(transactions)
+    print("Sync complete.")
 
-        # Load and sync to DB
-        transactions = loader.load_from_csv(csv_file)
-        loader.sync_to_db(transactions)
+def start_chat():
+    """Starts the ReAct Agent chat loop."""
+    print("\n--- Personal Finance AI Assistant ---")
+    print("Type 'exit' or 'quit' to stop.\n")
+    
+    # Use the context manager to ensure the checkpointer connection is closed properly
+    with get_sqlite_saver() as saver:
+        # Compile the graph with the checkpointer
+        app = create_graph(saver)
         
-        print("Sync completed successfully.")
-        return transactions
+        # We use a fixed thread_id for this session to maintain memory
+        config = {"configurable": {"thread_id": "user_123"}}
         
-    except Exception as e:
-        print(f"Error during execution: {e}")
-        return []
+        while True:
+            user_input = input("You: ")
+            if user_input.lower() in ["exit", "quit"]:
+                break
+                
+            # Invoke the graph
+            # We pass the input as a list of messages
+            result = app.invoke(
+                {"messages": [HumanMessage(content=user_input)]},
+                config=config
+            )
+            
+            # The last message in the state is the agent's response
+            assistant_response = result["messages"][-1].content
+            print(f"Assistant: {assistant_response}\n")
 
 if __name__ == "__main__":
-    main()
+    # 1. Sync data first
+    sync_data()
+    
+    # 2. Start the AI Assistant
+    start_chat()
